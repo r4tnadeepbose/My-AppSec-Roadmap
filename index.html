@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>My Application Security Roadmap | Ratnadeep Bose</title>
+  <style>
+    :root {
+      --bg: #000000;
+      --surface: #0a0a0a;
+      --card: #0d0d0d;
+      --border: #2a2a2a;
+      --border-soft: #262626;
+      --text: #f2f2f2;
+      --muted: #b3b3b3;
+      --muted-2: #999999;
+      --active-bg: #1a1a1a;
+      --active-border: #f2f2f2;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      line-height: 1.55;
+    }
+    .app { max-width: 1200px; margin: 0 auto; padding: 24px 16px 40px; }
+    .topbar {
+      background: #050505;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+    .eyebrow {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 600;
+      color: #f0f0f0;
+      background: #000000;
+      border: 1px solid #3a3a3a;
+      border-radius: 999px;
+      padding: 2px 10px;
+      margin-bottom: 10px;
+      letter-spacing: 0.02em;
+    }
+    h1 { margin: 0 0 6px; font-size: 1.9rem; line-height: 1.2; color: #ffffff; font-weight: 600; }
+    .subtitle { margin: 0 0 12px; color: var(--muted); font-size: 0.98rem; max-width: 900px; }
+    .meta { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+    .pill {
+      font-size: 0.82rem;
+      color: #d9d9d9;
+      background: #0a0a0a;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 4px 10px;
+    }
+    .tabs { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+    .tab-btn {
+      appearance: none;
+      border: 1px solid #3a3a3a;
+      background: #0a0a0a;
+      color: #e6e6e6;
+      border-radius: 6px;
+      padding: 8px 12px;
+      font: inherit;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .tab-btn:hover { background: #141414; border-color: #666666; }
+    .tab-btn.active {
+      background: #f2f2f2;
+      border-color: #f2f2f2;
+      color: #000000;
+      font-weight: 500;
+    }
+    .panel { display: none; }
+    .panel.active { display: block; }
+    .card {
+      background: #0b0b0b;
+      border: 1px solid var(--border-soft);
+      border-radius: 8px;
+      padding: 18px;
+      margin-bottom: 14px;
+    }
+    .card h2 { margin: 0 0 10px; font-size: 1.1rem; color: #ffffff; font-weight: 600; }
+    .card h3 { margin: 14px 0 6px; font-size: 0.98rem; color: #f0f0f0; font-weight: 600; }
+    p { margin: 0 0 10px; } p:last-child { margin-bottom: 0; }
+    ul { margin: 8px 0 0 18px; padding: 0; } li { margin: 4px 0; color: #d4d4d4; }
+    .muted { color: var(--muted); } .small { font-size: 0.92rem; }
+    .note {
+      border: 1px solid #333333;
+      border-left: 3px solid #f2f2f2;
+      background: #111111;
+      padding: 10px 12px;
+      border-radius: 4px;
+      color: #d9d9d9;
+      margin-top: 10px;
+    }
+    .quote {
+      margin-top: 12px;
+      padding: 12px 14px;
+      border: 1px solid #333333;
+      background: #101010;
+      border-radius: 4px;
+      color: #dcdcdc;
+      font-style: italic;
+    }
+    .grid-2 { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 14px; }
+    .grid-2-even { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .phases { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 10px; }
+    .phase {
+      border: 1px solid #2e2e2e;
+      border-radius: 6px;
+      padding: 12px;
+      background: #080808;
+    }
+    .phase .tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      color: #f0f0f0;
+      background: #141414;
+      border: 1px solid #3a3a3a;
+      border-radius: 999px;
+      padding: 2px 8px;
+      margin-bottom: 6px;
+    }
+    .phase h4 { margin: 0 0 6px; font-size: 0.98rem; color: #f5f5f5; font-weight: 600; }
+    .phase ul { margin-left: 16px; }
+    .phase li { font-size: 0.92rem; color: #cccccc; margin: 3px 0; }
+    .section-head { margin-bottom: 10px; }
+    .section-head h2 { margin: 0 0 4px; font-size: 1.25rem; color: #ffffff; font-weight: 600; }
+    .section-head p { margin: 0; color: var(--muted); }
+    .diagram-card {
+      background: #0a0a0a;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .vis-container {
+      position: relative;
+      overflow: auto;
+      max-height: calc(100vh - 260px);
+      min-height: 320px;
+      background: #000000;
+      cursor: grab;
+    }
+    .vis-container.dragging {
+      cursor: grabbing;
+      user-select: none;
+    }
+    .vis-container:fullscreen,
+    .vis-container:-webkit-full-screen {
+      max-height: none;
+      height: 100vh;
+      min-height: 100vh;
+      width: 100vw;
+      border-radius: 0;
+      padding-bottom: 12px;
+      background: #000000;
+    }
+    .chart { min-width: 100%; padding: 12px; }
+    .chart svg { display: block; max-width: none; height: auto; }
+    .zoom-controls {
+      position: sticky;
+      top: 8px;
+      margin: 8px 8px 0 auto;
+      width: max-content;
+      z-index: 10;
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      padding: 4px 6px;
+      border: 1px solid #3a3a3a;
+      border-radius: 6px;
+      background: rgba(10,10,10,0.96);
+      cursor: auto;
+    }
+    .zoom-controls button {
+      font: inherit;
+      font-size: 13px;
+      line-height: 1;
+      padding: 6px 10px;
+      border: 1px solid #3a3a3a;
+      border-radius: 4px;
+      background: #0a0a0a;
+      color: #f2f2f2;
+      cursor: pointer;
+    }
+    .zoom-controls button:hover { background: #1a1a1a; border-color: #666666; }
+    .zoom-sep { width: 1px; height: 18px; background: #3a3a3a; }
+    .status { padding: 12px; color: #b3b3b3; font-size: 14px; }
+    .status.error { color: #f2f2f2; white-space: pre-wrap; border: 1px solid #3a3a3a; background: #111111; }
+    .inline-nav { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .link-btn {
+      appearance: none;
+      border: 1px solid #3a3a3a;
+      background: #0a0a0a;
+      color: #e6e6e6;
+      border-radius: 6px;
+      padding: 6px 10px;
+      font: inherit;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+    .link-btn:hover { background: #151515; border-color: #666666; }
+    .cert-list {
+      list-style: none;
+      margin: 10px 0 0 0;
+      padding: 0;
+      display: grid;
+      gap: 10px;
+    }
+    .cert-list li {
+      margin: 0;
+      padding: 10px 12px;
+      border: 1px solid #3a3a3a;
+      border-radius: 6px;
+      background: #0a0a0a;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      color: #d4d4d4;
+    }
+    .cert-box {
+      display: inline-block;
+      padding: 6px 10px;
+      border: 1px solid #bdbdbd;
+      border-radius: 4px;
+      background: #111111;
+      color: #ffffff;
+      text-decoration: none;
+      font-size: 0.9rem;
+    }
+    .cert-box:hover {
+      background: #1a1a1a;
+      border-color: #ffffff;
+    }
+    footer { margin-top: 8px; color: #999999; font-size: 0.88rem; text-align: center; }
+    strong { color: #ffffff; font-weight: 600; }
+    a { color: #f0f0f0; text-decoration: none; }
+    @media (max-width: 980px) { .grid-2, .grid-2-even, .phases { grid-template-columns: 1fr; } .vis-container { max-height: calc(100vh - 300px); } }
+    @media (max-width: 640px) { .app { padding: 16px 12px 24px; } .topbar { padding: 14px; } .card { padding: 14px; } h1 { font-size: 1.5rem; } }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <span class="eyebrow">Personal Learning-Based Project</span>
+      <h1>My Application Security Roadmap</h1>
+      <p class="subtitle">A single-page, learning-based roadmap by Ratnadeep Bose inspired by Semgrep Academy (Levels 1–3), consolidating Application Security concepts into a practical progression from discovery to continuous improvement.</p>
+      <div class="meta">
+        <span class="pill"><strong>Author:</strong> Ratnadeep Bose</span>
+        <span class="pill"><strong>Foundation:</strong> Semgrep Academy (Levels 1, 2, 3)</span>
+        <span class="pill"><strong>Note:</strong> Not an official Semgrep Academy framework</span>
+      </div>
+      <nav class="tabs" aria-label="Roadmap sections">
+        <button class="tab-btn active" data-target="panel-home" type="button">My Roadmap</button>
+        <button class="tab-btn" data-target="panel-overview" type="button">Overview</button>
+        <button class="tab-btn" data-target="panel-p0" type="button">Phase 0</button>
+        <button class="tab-btn" data-target="panel-p1" type="button">Phase 1</button>
+        <button class="tab-btn" data-target="panel-p2" type="button">Phase 2</button>
+        <button class="tab-btn" data-target="panel-p3" type="button">Phase 3</button>
+        <button class="tab-btn" data-target="panel-p4" type="button">Phase 4</button>
+        <button class="tab-btn" data-target="panel-p5" type="button">Phase 5</button>
+      </nav>
+    </header>
+
+    <main>
+      <section id="panel-home" class="panel active">
+        <div class="grid-2">
+          <article class="card">
+            <h2>1. Learning Foundation</h2>
+            <p><strong>Based on learning from:</strong></p>
+            <ul class="cert-list">
+              <li><span>Semgrep Academy – Application Security Course 1 (Level 1)</span><a class="cert-box" href="https://academy.semgrep.dev/certificates/vth81up4wt" target="_blank" rel="noopener noreferrer"><strong>Certificate</strong></a></li>
+              <li><span>Semgrep Academy – Application Security Course 2 (Level 2)</span><a class="cert-box" href="https://academy.semgrep.dev/certificates/joc8lqqxsv" target="_blank" rel="noopener noreferrer"><strong>Certificate</strong></a></li>
+              <li><span>Semgrep Academy – Application Security Course 3 (Level 3)</span><a class="cert-box" href="https://academy.semgrep.dev/certificates/o0pqqdkla2" target="_blank" rel="noopener noreferrer"><strong>Certificate</strong></a></li>
+            </ul>
+            <div class="quote">“This roadmap represents my understanding and practical interpretation of the Application Security concepts, activities, tools, and security practices I learned across the three Semgrep Academy courses.”</div>
+            <div class="note"><strong>Important:</strong> This is my personal learning-based roadmap, not an official Semgrep Academy framework or roadmap.</div>
+          </article>
+          <article class="card">
+            <h2>Project Intent</h2>
+            <p>After completing these courses, I wanted to consolidate what I had learned and organize it into a practical roadmap showing how I understand the Application Security lifecycle and how I would approach implementing its different activities.</p>
+            <p class="muted">The roadmap reflects my own interpretation of the knowledge gained from these three courses. It demonstrates how I connected the concepts, understood their relationships, and organized them into a logical progression.</p>
+            <h3>Story of the Roadmap</h3>
+            <p><strong>What I learned → How I understood it → How I connected the concepts → How I would approach Application Security in practice.</strong></p>
+            <div class="inline-nav">
+              <button class="link-btn" data-jump="panel-overview" type="button">View Overview Flowchart</button>
+              <button class="link-btn" data-jump="panel-p0" type="button">Start at Phase 0</button>
+            </div>
+          </article>
+        </div>
+
+        <section class="card">
+          <h2>2. Roadmap Structure (Six Progressive Stages)</h2>
+          <div class="phases">
+            <div class="phase"><span class="tag">Phase 0 – DISCOVER</span><h4>Foundation &amp; Visibility</h4><ul><li>Understand application security goals.</li><li>Identify applications, assets, technologies, and stakeholders.</li><li>Assess existing security practices.</li><li>Establish initial security priorities.</li></ul></div>
+            <div class="phase"><span class="tag">Phase 1 – ESTABLISH</span><h4>Baseline Security Controls</h4><ul><li>Vulnerability assessments and threat modeling.</li><li>Secure code reviews.</li><li>SAST, SCA, and secret scanning.</li><li>Basic security testing and CI/CD integration.</li></ul></div>
+            <div class="phase"><span class="tag">Phase 2 – OPERATIONALIZE</span><h4>Repeatable AppSec Practices</h4><ul><li>Developer security education, advocacy, and champions.</li><li>Responsible disclosure and bug bounty.</li><li>Policies and secure coding practices.</li><li>API security tools, WAF, ASOC/ASPM, and IDE integrations.</li><li>Metrics, regression testing, and awareness.</li></ul></div>
+            <div class="phase"><span class="tag">Phase 3 – INTEGRATE</span><h4>DevSecOps &amp; Modern Security</h4><ul><li>DevSecOps, pipeline security, and automated testing.</li><li>Security sprints and asynchronous pipelines.</li><li>IAST and RASP.</li><li>Container, serverless, API, and infrastructure security.</li><li>Zero Trust, Security as Code, SIEM, service mesh, and API gateway integration.</li></ul></div>
+            <div class="phase"><span class="tag">Phase 4 – GOVERN</span><h4>Structured Security Management</h4><ul><li>Application Security Program and Secure SDLC policies.</li><li>Security standards and guidelines.</li><li>Incident response and forensics.</li><li>Threat intelligence and virtual patching.</li><li>Disaster recovery, business continuity, and post-incident reviews.</li></ul></div>
+            <div class="phase"><span class="tag">Phase 5 – OPTIMIZE</span><h4>Continuous Improvement</h4><ul><li>Security automation and developer self-service.</li><li>Secure-by-default practices.</li><li>Continuous security monitoring.</li><li>Metrics and security OKRs.</li><li>Continuous improvement and maturity assessment.</li></ul></div>
+          </div>
+        </section>
+
+        <div class="grid-2-even">
+          <article class="card">
+            <h2>3. How This Shows My Understanding</h2>
+            <ul>
+              <li><strong>Foundational concepts</strong> establish the starting point (goals, visibility, priorities).</li>
+              <li><strong>Intermediate activities</strong> show how security becomes an organizational practice (education, champions, metrics, repeatable processes).</li>
+              <li><strong>Advanced concepts</strong> show integration into modern development and infrastructure (DevSecOps, cloud/container/API, Security as Code).</li>
+              <li><strong>Governance and incident response</strong> establish structured security management and resilience.</li>
+              <li><strong>Continuous optimization</strong> demonstrates how an AppSec program evolves over time through automation, measurement, and improvement.</li>
+            </ul>
+          </article>
+          <article class="card">
+            <h2>4. Framework References (Complementary)</h2>
+            <p>These industry frameworks complement my learning (not presented as frameworks necessarily covered in the three courses):</p>
+            <ul>
+              <li><strong>OWASP SAMM</strong> – Software Assurance Maturity Model</li>
+              <li><strong>BSIMM</strong> – Building Security In Maturity Model</li>
+              <li><strong>NIST SSDF</strong> – Secure Software Development Framework</li>
+            </ul>
+            <div class="note small">The core focus remains my learning-based interpretation and practical roadmap organization.</div>
+          </article>
+        </div>
+
+        <section class="card">
+          <h2>5. Final Presentation</h2>
+          <div class="quote">“After completing three Application Security courses from Semgrep Academy, I consolidated my learning into this roadmap. It represents my understanding of how the different areas of Application Security connect, from foundational security activities and tooling to DevSecOps integration, governance, incident response, and continuous improvement. I created this flowchart to organize the knowledge I gained into a practical progression and to illustrate how I would approach building and improving an Application Security program.”</div>
+          <p style="margin-top:12px;"><strong>Author:</strong> Ratnadeep Bose</p>
+          <p class="muted small">This is an independently developed, learning-based technical roadmap built from knowledge gained through completing the three Semgrep Academy Application Security courses. It is not an official Semgrep Academy publication.</p>
+        </section>
+      </section>
+
+      <section id="panel-overview" class="panel" data-diagram="overview">
+        <div class="section-head">
+          <h2>Overview — Enterprise Application Security Program Roadmap</h2>
+          <p>Phased Application Security maturity journey based on my learning (Levels 1–3). Use the controls to pan and zoom.</p>
+        </div>
+        <div class="diagram-card">
+          <div class="vis-container" id="vis-overview">
+            <div class="zoom-controls" aria-label="View controls">
+              <button type="button" data-action="pan-left">←</button><button type="button" data-action="pan-up">↑</button><button type="button" data-action="pan-down">↓</button><button type="button" data-action="pan-right">→</button>
+              <span class="zoom-sep" aria-hidden="true"></span>
+              <button type="button" data-action="zoom-out">−</button><button type="button" data-action="zoom-reset">Reset</button><button type="button" data-action="zoom-in">+</button><span class="zoom-sep"></span><button type="button" data-action="fullscreen" title="Toggle fullscreen">Fullscreen</button>
+            </div>
+            <div class="chart" id="chart-overview"><div class="status">Click this tab to load the diagram…</div></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="panel-p0" class="panel" data-diagram="p0">
+        <div class="section-head"><h2>Phase 0 — Discover (Assessment &amp; Foundation)</h2><p><strong>Objective:</strong> Understand the application ecosystem and its risks, and establish an initial AppSec strategy and ownership. [L1]</p></div>
+        <div class="diagram-card"><div class="vis-container" id="vis-p0"><div class="zoom-controls"><button type="button" data-action="pan-left">←</button><button type="button" data-action="pan-up">↑</button><button type="button" data-action="pan-down">↓</button><button type="button" data-action="pan-right">→</button><span class="zoom-sep"></span><button type="button" data-action="zoom-out">−</button><button type="button" data-action="zoom-reset">Reset</button><button type="button" data-action="zoom-in">+</button><span class="zoom-sep"></span><button type="button" data-action="fullscreen" title="Toggle fullscreen">Fullscreen</button></div><div class="chart" id="chart-p0"><div class="status">Click this tab to load the diagram…</div></div></div></div>
+      </section>
+
+      <section id="panel-p1" class="panel" data-diagram="p1">
+        <div class="section-head"><h2>Phase 1 — Establish (Foundational Security Controls)</h2><p><strong>Objective:</strong> Establish initial vulnerability visibility through baseline controls and a consistent remediation workflow. [L1]</p></div>
+        <div class="diagram-card"><div class="vis-container" id="vis-p1"><div class="zoom-controls"><button type="button" data-action="pan-left">←</button><button type="button" data-action="pan-up">↑</button><button type="button" data-action="pan-down">↓</button><button type="button" data-action="pan-right">→</button><span class="zoom-sep"></span><button type="button" data-action="zoom-out">−</button><button type="button" data-action="zoom-reset">Reset</button><button type="button" data-action="zoom-in">+</button><span class="zoom-sep"></span><button type="button" data-action="fullscreen" title="Toggle fullscreen">Fullscreen</button></div><div class="chart" id="chart-p1"><div class="status">Click this tab to load the diagram…</div></div></div></div>
+      </section>
+
+      <section id="panel-p2" class="panel" data-diagram="p2">
+        <div class="section-head"><h2>Phase 2 — Operationalize (Repeatable AppSec Program)</h2><p><strong>Objective:</strong> Turn isolated security activities into repeatable processes through engagement, metrics, and centralized management. [L1, L2]</p></div>
+        <div class="diagram-card"><div class="vis-container" id="vis-p2"><div class="zoom-controls"><button type="button" data-action="pan-left">←</button><button type="button" data-action="pan-up">↑</button><button type="button" data-action="pan-down">↓</button><button type="button" data-action="pan-right">→</button><span class="zoom-sep"></span><button type="button" data-action="zoom-out">−</button><button type="button" data-action="zoom-reset">Reset</button><button type="button" data-action="zoom-in">+</button><span class="zoom-sep"></span><button type="button" data-action="fullscreen" title="Toggle fullscreen">Fullscreen</button></div><div class="chart" id="chart-p2"><div class="status">Click this tab to load the diagram…</div></div></div></div>
+      </section>
+
+      <section id="panel-p3" class="panel" data-diagram="p3">
+        <div class="section-head"><h2>Phase 3 — Integrate (DevSecOps &amp; Modern Technologies)</h2><p><strong>Objective:</strong> Embed security into engineering, deployment, and production through automation and runtime visibility. [L1, L3]</p></div>
+        <div class="diagram-card"><div class="vis-container" id="vis-p3"><div class="zoom-controls"><button type="button" data-action="pan-left">←</button><button type="button" data-action="pan-up">↑</button><button type="button" data-action="pan-down">↓</button><button type="button" data-action="pan-right">→</button><span class="zoom-sep"></span><button type="button" data-action="zoom-out">−</button><button type="button" data-action="zoom-reset">Reset</button><button type="button" data-action="zoom-in">+</button><span class="zoom-sep"></span><button type="button" data-action="fullscreen" title="Toggle fullscreen">Fullscreen</button></div><div class="chart" id="chart-p3"><div class="status">Click this tab to load the diagram…</div></div></div></div>
+      </section>
+
+      <section id="panel-p4" class="panel" data-diagram="p4">
+        <div class="section-head"><h2>Phase 4 — Govern (Policies, Standards &amp; Incident Response)</h2><p><strong>Objective:</strong> Establish accountability, enforce standards, and maintain incident readiness and resilience. [L3]</p></div>
+        <div class="diagram-card"><div class="vis-container" id="vis-p4"><div class="zoom-controls"><button type="button" data-action="pan-left">←</button><button type="button" data-action="pan-up">↑</button><button type="button" data-action="pan-down">↓</button><button type="button" data-action="pan-right">→</button><span class="zoom-sep"></span><button type="button" data-action="zoom-out">−</button><button type="button" data-action="zoom-reset">Reset</button><button type="button" data-action="zoom-in">+</button><span class="zoom-sep"></span><button type="button" data-action="fullscreen" title="Toggle fullscreen">Fullscreen</button></div><div class="chart" id="chart-p4"><div class="status">Click this tab to load the diagram…</div></div></div></div>
+      </section>
+
+      <section id="panel-p5" class="panel" data-diagram="p5">
+        <div class="section-head"><h2>Phase 5 — Optimize (Continuous Improvement)</h2><p><strong>Objective:</strong> Build an automated, measurable, secure-by-default AppSec program that continuously improves over time. [L1, L2, L3]</p></div>
+        <div class="diagram-card"><div class="vis-container" id="vis-p5"><div class="zoom-controls"><button type="button" data-action="pan-left">←</button><button type="button" data-action="pan-up">↑</button><button type="button" data-action="pan-down">↓</button><button type="button" data-action="pan-right">→</button><span class="zoom-sep"></span><button type="button" data-action="zoom-out">−</button><button type="button" data-action="zoom-reset">Reset</button><button type="button" data-action="zoom-in">+</button><span class="zoom-sep"></span><button type="button" data-action="fullscreen" title="Toggle fullscreen">Fullscreen</button></div><div class="chart" id="chart-p5"><div class="status">Click this tab to load the diagram…</div></div></div></div>
+      </section>
+    </main>
+
+    <footer>
+      <p><strong>My Application Security Roadmap</strong> — Ratnadeep Bose | Personal learning-based project inspired by Semgrep Academy (Levels 1, 2, 3). All content in one page.</p>
+    </footer>
+  </div>
+
+  <script type="module">
+    import mermaid from 'https://esm.sh/mermaid@11/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({
+      startOnLoad: false,
+      securityLevel: 'loose',
+      theme: 'base',
+      themeVariables: {
+        darkMode: true,
+        background: '#000000',
+        primaryColor: '#111111',
+        primaryTextColor: '#f2f2f2',
+        primaryBorderColor: '#d0d0d0',
+        lineColor: '#cccccc',
+        secondaryColor: '#1a1a1a',
+        tertiaryColor: '#222222',
+        mainBkg: '#111111',
+        nodeBorder: '#d0d0d0',
+        clusterBkg: '#0a0a0a',
+        clusterBorder: '#666666',
+        titleColor: '#ffffff',
+        edgeLabelBackground: '#000000',
+        textColor: '#f2f2f2',
+        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif'
+      },
+      flowchart: { curve: 'basis', padding: 8, htmlLabels: true, nodeSpacing: 30, rankSpacing: 30 }
+    });
+
+    const DEFAULT_ZOOM = 0.7;
+
+    const diagrams = {
+      overview: `flowchart TB
+    classDef people fill:#1a1a1a,stroke:#f2f2f2,color:#f2f2f2,stroke-width:1px
+    classDef process fill:#141414,stroke:#f2f2f2,color:#f2f2f2,stroke-width:1px
+    classDef technology fill:#222222,stroke:#f2f2f2,color:#f2f2f2,stroke-width:1px
+    classDef decision fill:#000000,stroke:#ffffff,color:#ffffff,stroke-width:1.5px
+    classDef deliverable fill:#2b2b2b,stroke:#f2f2f2,color:#f2f2f2,stroke-width:1px
+
+    START([Start: Build an Application Security Program]):::process --> P0
+
+    subgraph P0["PHASE 0 - DISCOVER (L1)"]
+      direction LR
+      P0P[People: Stakeholders, ownership, goals]:::people
+      P0R[Process: Inventory, risk assessment, priorities]:::process
+      P0T[Technology: Application and tooling landscape]:::technology
+      P0P --> P0R --> P0T
+    end
+    P0 --> G0{Scope, risks, and priorities clear?}:::decision
+    G0 -- No --> P0
+    G0 -- Yes --> P1
+
+    subgraph P1["PHASE 1 - ESTABLISH (L1)"]
+      direction LR
+      P1P[People: Security awareness and triage roles]:::people
+      P1R[Process: Threat modeling and baseline testing]:::process
+      P1T[Technology: SAST, SCA, secrets scanning, CI checks]:::technology
+      P1P --> P1R --> P1T
+    end
+    P1 --> G1{Baseline controls and remediation working?}:::decision
+    G1 -- No --> P1
+    G1 -- Yes --> P2
+
+    subgraph P2["PHASE 2 - OPERATIONALIZE (L1, L2)"]
+      direction LR
+      P2P[People: Education, champions, advocacy]:::people
+      P2R[Process: Metrics, policies, disclosure, regression testing]:::process
+      P2T[Technology: IDE, API tools, WAF, ASOC and ASPM]:::technology
+      P2P --> P2R --> P2T
+    end
+    P2 --> G2{Repeatable processes and adoption in place?}:::decision
+    G2 -- No --> P2
+    G2 -- Yes --> P3
+
+    subgraph P3["PHASE 3 - INTEGRATE (L1, L3)"]
+      direction LR
+      P3P[People: DevSecOps collaboration and shared ownership]:::people
+      P3R[Process: Automated pipelines and security gates]:::process
+      P3T[Technology: IAST, RASP, cloud, container, runtime controls]:::technology
+      P3P --> P3R --> P3T
+    end
+    P3 --> G3{Security embedded in SDLC and runtime?}:::decision
+    G3 -- No --> P3
+    G3 -- Yes --> P4
+
+    subgraph P4["PHASE 4 - GOVERN (L3)"]
+      direction LR
+      P4P[People: Governance and incident response roles]:::people
+      P4R[Process: Policies, standards, IR, DR, and BCP]:::process
+      P4T[Technology: Logging, threat intelligence, evidence]:::technology
+      P4P --> P4R --> P4T
+    end
+    P4 --> G4{Governance enforced and response ready?}:::decision
+    G4 -- No --> P4
+    G4 -- Yes --> P5
+
+    subgraph P5["PHASE 5 - OPTIMIZE (L1, L2, L3)"]
+      direction LR
+      P5P[People: Secure culture and developer self-service]:::people
+      P5R[Process: Metrics, OKRs, continuous improvement]:::process
+      P5T[Technology: Automation, secure defaults, dashboards]:::technology
+      P5P --> P5R --> P5T
+    end
+    P5 --> G5{Maturity sustained and risk trending down?}:::decision
+    G5 -- No --> GAP[Gap analysis and improvement backlog]:::deliverable
+    GAP --> P1
+    GAP --> P3
+    G5 -- Yes --> TARGET([Target: Continuous, automated, secure-by-default AppSec]):::process
+
+    TARGET -. Reassess goals and priorities .-> P0
+    P2 -. Metrics and feedback .-> P5
+    P4 -. Incidents and lessons learned .-> P0`,
+      p0: `flowchart LR
+  classDef decision fill:#000000,stroke:#ffffff,color:#ffffff
+  classDef people fill:#1a1a1a,stroke:#f2f2f2,color:#f2f2f2
+  classDef process fill:#141414,stroke:#f2f2f2,color:#f2f2f2
+  classDef technology fill:#222222,stroke:#f2f2f2,color:#f2f2f2
+  classDef deliverable fill:#2b2b2b,stroke:#f2f2f2,color:#f2f2f2
+
+  START([Enter Phase 0<br/>No formal AppSec baseline]):::process --> D{Critical apps, owners,<br/>and risks identified?}:::decision
+  D -- No --> PEOPLE
+  D -- No --> PROCESS
+  D -- No --> TECH
+  D -- Yes --> DELIV
+
+  subgraph PEOPLE[PEOPLE]
+    direction TB
+    P1[Identify stakeholders and sponsors]:::people
+    P2[Define ownership and RACI]:::people
+    P3[Align security goals with business priorities]:::people
+    P1 --> P2 --> P3
+  end
+
+  subgraph PROCESS[PROCESS]
+    direction TB
+    R1[Create application and asset inventory]:::process
+    R2[Map SDLC and release workflows]:::process
+    R3[Assess current security practices]:::process
+    R4[Identify key risks and priorities]:::process
+    R5[Draft initial AppSec strategy]:::process
+    R1 --> R2 --> R3 --> R4 --> R5
+  end
+
+  subgraph TECH[TECHNOLOGY]
+    direction TB
+    T1[Discover repositories, CI/CD, and environments]:::technology
+    T2[Catalog languages, frameworks, and architectures]:::technology
+    T3[Map APIs, services, data stores, and dependencies]:::technology
+    T1 --> T2 --> T3
+  end
+
+  PEOPLE --> DELIV
+  PROCESS --> DELIV
+  TECH --> DELIV
+
+  DELIV[Phase 0 Deliverables]:::deliverable
+  DELIV --> D1[Application and technology inventory]:::deliverable
+  DELIV --> D2[Stakeholder map and ownership model]:::deliverable
+  DELIV --> D3[Risk register and maturity assessment]:::deliverable
+  DELIV --> D4[Initial AppSec strategy and priorities]:::deliverable
+
+  D1 & D2 & D3 & D4 --> G{Ready to establish foundational controls?}:::decision
+  G -- No --> R5
+  G -- Yes --> NEXT([Proceed to Phase 1 - Establish]):::process`,
+      p1: `flowchart LR
+  classDef decision fill:#000000,stroke:#ffffff,color:#ffffff
+  classDef people fill:#1a1a1a,stroke:#f2f2f2,color:#f2f2f2
+  classDef process fill:#141414,stroke:#f2f2f2,color:#f2f2f2
+  classDef technology fill:#222222,stroke:#f2f2f2,color:#f2f2f2
+  classDef deliverable fill:#2b2b2b,stroke:#f2f2f2,color:#f2f2f2
+
+  START([Enter Phase 1<br/>Discovery complete]):::process --> D{Priority applications identified?}:::decision
+  D -- No --> PROCESS
+  D -- Yes --> PEOPLE
+  D -- Yes --> PROCESS
+  D -- Yes --> TECH
+
+  subgraph PEOPLE[PEOPLE]
+    direction TB
+    P1[Build developer security awareness]:::people
+    P2[Introduce secure code review participation]:::people
+    P3[Assign triage and remediation ownership]:::people
+    P1 --> P2 --> P3
+  end
+
+  subgraph PROCESS[PROCESS]
+    direction TB
+    R1[Perform threat modeling for critical apps]:::process
+    R2[Run vulnerability assessments and secure code reviews]:::process
+    R3[Define prioritization and remediation workflow]:::process
+    R4[Establish baseline testing cadence]:::process
+    R1 --> R2 --> R3 --> R4
+  end
+
+  subgraph TECH[TECHNOLOGY]
+    direction TB
+    T1[Implement SAST scanning]:::technology
+    T2[Implement SCA and dependency checks]:::technology
+    T3[Implement secret scanning]:::technology
+    T4[Add basic security checks in CI/CD]:::technology
+    T1 --> T2 --> T3 --> T4
+  end
+
+  PEOPLE --> DELIV
+  PROCESS --> DELIV
+  TECH --> DELIV
+
+  DELIV[Phase 1 Deliverables]:::deliverable
+  DELIV --> D1[Threat models and assessment findings]:::deliverable
+  DELIV --> D2[Baseline scan configurations]:::deliverable
+  DELIV --> D3[Remediation workflow and tracking process]:::deliverable
+  DELIV --> D4[Initial vulnerability visibility baseline]:::deliverable
+
+  D1 & D2 & D3 & D4 --> G{Baseline controls and remediation working?}:::decision
+  G -- No --> R3
+  G -- Yes --> NEXT([Proceed to Phase 2 - Operationalize]):::process`,
+      p2: `flowchart LR
+  classDef decision fill:#000000,stroke:#ffffff,color:#ffffff
+  classDef people fill:#1a1a1a,stroke:#f2f2f2,color:#f2f2f2
+  classDef process fill:#141414,stroke:#f2f2f2,color:#f2f2f2
+  classDef technology fill:#222222,stroke:#f2f2f2,color:#f2f2f2
+  classDef deliverable fill:#2b2b2b,stroke:#f2f2f2,color:#f2f2f2
+
+  START([Enter Phase 2<br/>Baseline controls established]):::process --> D{Teams engaged and feedback loops open?}:::decision
+  D -- No --> PEOPLE
+  D -- Yes --> PEOPLE
+  D -- Yes --> PROCESS
+  D -- Yes --> TECH
+
+  subgraph PEOPLE[PEOPLE]
+    direction TB
+    P1[Provide developer security education]:::people
+    P2[Build security advocacy and champions network]:::people
+    P3[Promote security awareness and collaboration]:::people
+    P1 --> P2 --> P3
+  end
+
+  subgraph PROCESS[PROCESS]
+    direction TB
+    R1[Define responsible disclosure and bug bounty process]:::process
+    R2[Establish policies and secure coding practices]:::process
+    R3[Track metrics and run regression testing]:::process
+    R4[Standardize repeatable AppSec workflows]:::process
+    R1 --> R2 --> R3 --> R4
+  end
+
+  subgraph TECH[TECHNOLOGY]
+    direction TB
+    T1[Integrate IDE and developer feedback tools]:::technology
+    T2[Adopt API security tools and WAF protections]:::technology
+    T3[Use ASOC or ASPM for centralized findings]:::technology
+    T4[Improve tracking and reporting integrations]:::technology
+    T1 --> T2 --> T3 --> T4
+  end
+
+  PEOPLE --> DELIV
+  PROCESS --> DELIV
+  TECH --> DELIV
+
+  DELIV[Phase 2 Deliverables]:::deliverable
+  DELIV --> D1[Training and champions program]:::deliverable
+  DELIV --> D2[Policies and secure coding guidance]:::deliverable
+  DELIV --> D3[Metrics, reporting, and regression testing]:::deliverable
+  DELIV --> D4[Centralized vulnerability management workflow]:::deliverable
+
+  D1 & D2 & D3 & D4 --> G{Repeatable processes and adoption in place?}:::decision
+  G -- No --> R3
+  G -- Yes --> NEXT([Proceed to Phase 3 - Integrate]):::process`,
+      p3: `flowchart LR
+  classDef decision fill:#000000,stroke:#ffffff,color:#ffffff
+  classDef people fill:#1a1a1a,stroke:#f2f2f2,color:#f2f2f2
+  classDef process fill:#141414,stroke:#f2f2f2,color:#f2f2f2
+  classDef technology fill:#222222,stroke:#f2f2f2,color:#f2f2f2
+  classDef deliverable fill:#2b2b2b,stroke:#f2f2f2,color:#f2f2f2
+
+  START([Enter Phase 3<br/>Operational AppSec processes]):::process --> D{Ready to embed security in engineering workflows?}:::decision
+  D -- No --> PROCESS
+  D -- Yes --> PEOPLE
+  D -- Yes --> PROCESS
+  D -- Yes --> TECH
+
+  subgraph PEOPLE[PEOPLE]
+    direction TB
+    P1[Strengthen DevSecOps collaboration]:::people
+    P2[Run security sprints and feedback loops]:::people
+    P3[Provide training for modern technologies]:::people
+    P1 --> P2 --> P3
+  end
+
+  subgraph PROCESS[PROCESS]
+    direction TB
+    R1[Integrate automated security testing in pipelines]:::process
+    R2[Adopt security gates and asynchronous checks]:::process
+    R3[Define risk-based exception handling]:::process
+    R4[Continuously validate controls]:::process
+    R1 --> R2 --> R3 --> R4
+  end
+
+  subgraph TECH[TECHNOLOGY]
+    direction TB
+    T1[Add IAST and RASP where applicable]:::technology
+    T2[Secure containers, serverless, and infrastructure as code]:::technology
+    T3[Apply API, cloud, and Zero Trust controls]:::technology
+    T4[Integrate SIEM, service mesh, and API gateway visibility]:::technology
+    T1 --> T2 --> T3 --> T4
+  end
+
+  PEOPLE --> DELIV
+  PROCESS --> DELIV
+  TECH --> DELIV
+
+  DELIV[Phase 3 Deliverables]:::deliverable
+  DELIV --> D1[Secure CI/CD pipelines and automated gates]:::deliverable
+  DELIV --> D2[Cloud, container, and infrastructure baselines]:::deliverable
+  DELIV --> D3[API and runtime security controls]:::deliverable
+  DELIV --> D4[Integrated monitoring and alerting workflows]:::deliverable
+
+  D1 & D2 & D3 & D4 --> G{Security embedded in build, deploy, and runtime?}:::decision
+  G -- No --> R3
+  G -- Yes --> NEXT([Proceed to Phase 4 - Govern]):::process`,
+      p4: `flowchart LR
+  classDef decision fill:#000000,stroke:#ffffff,color:#ffffff
+  classDef people fill:#1a1a1a,stroke:#f2f2f2,color:#f2f2f2
+  classDef process fill:#141414,stroke:#f2f2f2,color:#f2f2f2
+  classDef technology fill:#222222,stroke:#f2f2f2,color:#f2f2f2
+  classDef deliverable fill:#2b2b2b,stroke:#f2f2f2,color:#f2f2f2
+
+  START([Enter Phase 4<br/>Integrated security practices]):::process --> D{Governance and response ownership defined?}:::decision
+  D -- No --> PEOPLE
+  D -- No --> PROCESS
+  D -- Yes --> PEOPLE
+  D -- Yes --> PROCESS
+  D -- Yes --> TECH
+
+  subgraph PEOPLE[PEOPLE]
+    direction TB
+    P1[Define policy owners and incident response leads]:::people
+    P2[Train teams for incident response and forensics]:::people
+    P3[Run post-incident reviews and accountability practices]:::people
+    P1 --> P2 --> P3
+  end
+
+  subgraph PROCESS[PROCESS]
+    direction TB
+    R1[Create AppSec and Secure SDLC policies]:::process
+    R2[Define standards and guidelines]:::process
+    R3[Establish incident response and forensic procedures]:::process
+    R4[Plan disaster recovery, business continuity, and reviews]:::process
+    R1 --> R2 --> R3 --> R4
+  end
+
+  subgraph TECH[TECHNOLOGY]
+    direction TB
+    T1[Enable logging, SIEM, and case management support]:::technology
+    T2[Use threat intelligence and virtual patching controls]:::technology
+    T3[Maintain backup, restore, and evidence collection tooling]:::technology
+    T1 --> T2 --> T3
+  end
+
+  PEOPLE --> DELIV
+  PROCESS --> DELIV
+  TECH --> DELIV
+
+  DELIV[Phase 4 Deliverables]:::deliverable
+  DELIV --> D1[Approved policies and governance framework]:::deliverable
+  DELIV --> D2[Standards and guidelines library]:::deliverable
+  DELIV --> D3[Incident response and forensics playbooks]:::deliverable
+  DELIV --> D4[DR and BCP documentation and review process]:::deliverable
+
+  D1 & D2 & D3 & D4 --> G{Policies enforced and response ready?}:::decision
+  G -- No --> R3
+  G -- Yes --> NEXT([Proceed to Phase 5 - Optimize]):::process`,
+      p5: `flowchart LR
+  classDef decision fill:#000000,stroke:#ffffff,color:#ffffff
+  classDef people fill:#1a1a1a,stroke:#f2f2f2,color:#f2f2f2
+  classDef process fill:#141414,stroke:#f2f2f2,color:#f2f2f2
+  classDef technology fill:#222222,stroke:#f2f2f2,color:#f2f2f2
+  classDef deliverable fill:#2b2b2b,stroke:#f2f2f2,color:#f2f2f2
+
+  START([Enter Phase 5<br/>Governed and integrated AppSec]):::process --> D{Ready to scale automation and continuous improvement?}:::decision
+  D -- No --> PEOPLE
+  D -- No --> PROCESS
+  D -- Yes --> PEOPLE
+  D -- Yes --> PROCESS
+  D -- Yes --> TECH
+
+  subgraph PEOPLE[PEOPLE]
+    direction TB
+    P1[Promote a secure-by-default culture]:::people
+    P2[Enable developer self-service and ownership]:::people
+    P3[Align teams around measurable security goals]:::people
+    P1 --> P2 --> P3
+  end
+
+  subgraph PROCESS[PROCESS]
+    direction TB
+    R1[Automate recurring AppSec activities]:::process
+    R2[Track metrics, KPIs, and security OKRs]:::process
+    R3[Assess maturity and identify improvement areas]:::process
+    R4[Continuously refine strategy and controls]:::process
+    R1 --> R2 --> R3 --> R4
+  end
+
+  subgraph TECH[TECHNOLOGY]
+    direction TB
+    T1[Implement policy-as-code and guardrails]:::technology
+    T2[Expand continuous security monitoring]:::technology
+    T3[Build dashboards and reporting automation]:::technology
+    T1 --> T2 --> T3
+  end
+
+  PEOPLE --> DELIV
+  PROCESS --> DELIV
+  TECH --> DELIV
+
+  DELIV[Phase 5 Deliverables]:::deliverable
+  DELIV --> D1[Automated and secure-by-default workflows]:::deliverable
+  DELIV --> D2[Developer self-service capabilities]:::deliverable
+  DELIV --> D3[Metrics, KPIs, and OKR dashboards]:::deliverable
+  DELIV --> D4[Continuous improvement and maturity plan]:::deliverable
+
+  D1 & D2 & D3 & D4 --> G{Maturity sustained and risk trending down?}:::decision
+  G -- No --> R3
+  G -- Yes --> TARGET([Mature AppSec Program<br/>Continuous improvement loop]):::process
+
+  TARGET -. Reassess and improve .-> START`
+    };
+
+    const rendered = new Set();
+    const states = new Map();
+
+    function getState(key) {
+      if (!states.has(key)) states.set(key, { zoom: DEFAULT_ZOOM });
+      return states.get(key);
+    }
+
+    function applyZoom(key) {
+      const chart = document.getElementById('chart-' + key);
+      const svg = chart ? chart.querySelector('svg') : null;
+      if (!chart || !svg) return;
+      const st = getState(key);
+      chart.style.width = (st.zoom * 100) + '%';
+      svg.style.width = '100%';
+      svg.style.height = 'auto';
+      svg.style.maxWidth = 'none';
+    }
+
+    async function ensureRendered(key) {
+      if (rendered.has(key) || !diagrams[key]) return;
+      const chart = document.getElementById('chart-' + key);
+      if (!chart) return;
+      chart.innerHTML = '<div class="status">Rendering diagram…</div>';
+      try {
+        const id = 'mmd-' + key + '-' + Math.random().toString(36).slice(2);
+        const { svg } = await mermaid.render(id, diagrams[key]);
+        chart.innerHTML = svg;
+        rendered.add(key);
+        applyZoom(key);
+      } catch (err) {
+        const msg = (err && (err.str || err.message)) ? (err.str || err.message) : String(err);
+        chart.innerHTML = '<div class="status error">Mermaid syntax/render error:\n' + msg.replace(/</g, '&lt;') + '</div>';
+        console.error(err);
+      }
+    }
+
+    function showPanel(panelId) {
+      document.querySelectorAll('.panel').forEach(p => p.classList.toggle('active', p.id === panelId));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.target === panelId));
+      const panel = document.getElementById(panelId);
+      if (panel && panel.dataset.diagram) {
+        ensureRendered(panel.dataset.diagram);
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => showPanel(btn.dataset.target));
+    });
+    document.querySelectorAll('[data-jump]').forEach(btn => {
+      btn.addEventListener('click', () => showPanel(btn.dataset.jump));
+    });
+
+    function updateFullscreenButtons() {
+      const fsEl = document.fullscreenElement || document.webkitFullscreenElement;
+      document.querySelectorAll('.vis-container').forEach(container => {
+        const btn = container.querySelector('[data-action="fullscreen"]');
+        if (!btn) return;
+        btn.textContent = (fsEl === container) ? 'Exit Fullscreen' : 'Fullscreen';
+      });
+    }
+
+    async function toggleFullscreen(container) {
+      const fsEl = document.fullscreenElement || document.webkitFullscreenElement;
+      try {
+        if (fsEl === container) {
+          if (document.exitFullscreen) await document.exitFullscreen();
+          else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+        } else {
+          if (fsEl) {
+            if (document.exitFullscreen) await document.exitFullscreen();
+            else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+          }
+          if (container.requestFullscreen) await container.requestFullscreen();
+          else if (container.webkitRequestFullscreen) container.webkitRequestFullscreen();
+        }
+      } catch (err) {
+        console.error('Fullscreen error:', err);
+      }
+    }
+
+    document.querySelectorAll('.vis-container').forEach(container => {
+      const key = container.id.replace('vis-', '');
+      const chart = document.getElementById('chart-' + key);
+      if (!chart) return;
+      const panStep = 160;
+      container.querySelectorAll('[data-action]').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const st = getState(key);
+          const action = btn.dataset.action;
+          if (action === 'zoom-in') { st.zoom = Math.min(4, +(st.zoom + 0.1).toFixed(2)); applyZoom(key); }
+          else if (action === 'zoom-out') { st.zoom = Math.max(0.2, +(st.zoom - 0.1).toFixed(2)); applyZoom(key); }
+          else if (action === 'zoom-reset') { st.zoom = DEFAULT_ZOOM; applyZoom(key); container.scrollLeft = 0; container.scrollTop = 0; }
+          else if (action === 'pan-left') { container.scrollBy({ left: -panStep, behavior: 'smooth' }); }
+          else if (action === 'pan-right') { container.scrollBy({ left: panStep, behavior: 'smooth' }); }
+          else if (action === 'pan-up') { container.scrollBy({ top: -panStep, behavior: 'smooth' }); }
+          else if (action === 'pan-down') { container.scrollBy({ top: panStep, behavior: 'smooth' }); }
+          else if (action === 'fullscreen') { await toggleFullscreen(container); }
+        });
+      });
+
+      let isDragging = false;
+      let dragStartX = 0;
+      let dragStartY = 0;
+      let scrollStartLeft = 0;
+      let scrollStartTop = 0;
+
+      container.addEventListener('mousedown', (e) => {
+        if (e.button !== 0) return;
+        if (e.target.closest('.zoom-controls')) return;
+        isDragging = true;
+        container.classList.add('dragging');
+        dragStartX = e.pageX;
+        dragStartY = e.pageY;
+        scrollStartLeft = container.scrollLeft;
+        scrollStartTop = container.scrollTop;
+        e.preventDefault();
+      });
+
+      window.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        const dx = e.pageX - dragStartX;
+        const dy = e.pageY - dragStartY;
+        container.scrollLeft = scrollStartLeft - dx;
+        container.scrollTop = scrollStartTop - dy;
+      });
+
+      const stopDragging = () => {
+        if (!isDragging) return;
+        isDragging = false;
+        container.classList.remove('dragging');
+      };
+      window.addEventListener('mouseup', stopDragging);
+      container.addEventListener('mouseleave', stopDragging);
+    });
+
+    document.addEventListener('fullscreenchange', updateFullscreenButtons);
+    document.addEventListener('webkitfullscreenchange', updateFullscreenButtons);
+  </script>
+</body>
+</html>
